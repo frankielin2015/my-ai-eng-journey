@@ -1,0 +1,15 @@
+# --- Python ---
+# The disposable per-project package box (never commit)
+.venv/
+
+# Byte-compiled caches Python writes automatically
+__pycache__/
+*.py[cod]
+
+# Tool state
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- macOS ---
+.DS_Store

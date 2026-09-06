@@ -39,6 +39,7 @@ uv run python progress.py
 | 05 | `ex05_oop_basics` | classes, `__init__`, instance vs class attrs, `__str__` |
 | 06 | `ex06_oop_advanced` | inheritance/`super`, dunders, `@property`, `@dataclass`, `@staticmethod`/`@classmethod` |
 | 07 | `ex07_generators_errors` | `yield`, generators, `try/except/finally`, custom exceptions, context managers |
+| 08 | `ex08_async_await` | coroutines, `async`/`await`, `asyncio.gather`, `asyncio.create_task`, timeouts/cancellation, async generators, async context managers |
 
 ## Tips from your instructor 
 

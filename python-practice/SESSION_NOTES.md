@@ -30,11 +30,14 @@ uv run pytest                                           # everything
 | 05 | ex05_oop_basics | DONE (8/8) -- but `withdraw` has a lurking bug (see below) |
 | 06 | ex06_oop_advanced | DONE (9/9 green) |
 | 07 | ex07_generators_errors | DONE (all green) |
+| 08 | ex08_async_await | DONE (15/15 green) |
 
-**STATUS: ENTIRE GYM COMPLETE -- 67/67 tests green, 7/7 modules.**
-Student finished ex01-ex07. Next phase = apply it: build a real small
-project (FastAPI + Pydantic recommended, ties to agentic-AI goal), or do
-LeetCode-in-Python reps. See "what's next" discussion.
+**STATUS: ENTIRE GYM COMPLETE -- 82/82 tests green, 8/8 modules.**
+Student finished ex01-ex08. Async/await covered in ex08 (coroutines, gather,
+create_task, timeouts/cancellation, async generators, async context managers).
+**Phase 0 of the AI transition plan is now CLOSED.** Next: Week 2 of
+`../ai-engineer-transition-plan.md` — OpenAI + Anthropic SDKs, structured
+outputs, function calling.
 
 ---
 

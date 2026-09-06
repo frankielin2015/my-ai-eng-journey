@@ -1,19 +1,29 @@
 [project]
 name = "python-practice"
 version = "0.1.0"
-description = "A TDD-style Python practice gym for a backend engineer learning Python."
-requires-python = ">=3.11"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Xiaofa Lin", email = "frankielin2015@gmail.com" }
+]
+requires-python = ">=3.14"
 dependencies = []
 
-[dependency-groups]
-dev = ["pytest>=8"]
+[project.scripts]
+python-practice = "python_practice:main"
 
-[[tool.uv.index]]
-name = "walmart"
-url = "https://pypi.ci.artifacts.walmart.com/artifactory/api/pypi/external-pypi/simple"
-default = true
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 addopts = "-q"
+asyncio_mode = "auto"
