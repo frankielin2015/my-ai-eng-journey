@@ -171,12 +171,14 @@ Test it with one small script before starting the Week 2 materials so SDK issues
 
 ### Week 4 — Embeddings + semantic similarity
 
-**Materials:**
-1. James Briggs — *Embeddings for AI* (25 min video) — https://www.youtube.com/watch?v=5Ef1S71q4s0
-2. James Briggs — *Intro to Vector Databases* (30 min video) — https://www.youtube.com/watch?v=dN8ls7zvJnU
-3. OpenAI Cookbook — *Embedding Wikipedia articles for search* (90 min, run the notebook end-to-end) — https://cookbook.openai.com/examples/embedding_wikipedia_articles_for_search
-4. OpenAI Cookbook — *Vector Databases overview* (45 min skim, sets up Week 5) — https://cookbook.openai.com/examples/vector_databases
-5. Pinecone — *What are embeddings?* (30 min) — https://www.pinecone.io/learn/vector-embeddings/
+**Materials:** *(Revised 2026-09-06 — original James Briggs videos removed from YouTube; substitutions verified live.)*
+1. Pinecone — *What are Vector Embeddings?* (25–30 min, the canonical written intro) — https://www.pinecone.io/learn/vector-embeddings/
+2. StatQuest — *Word Embedding and Word2Vec, Clearly Explained!!!* (16 min video) — https://www.youtube.com/watch?v=viZrOnJclY0
+3. IBM Technology — *What is a Vector Database?* (10 min video) — https://www.youtube.com/watch?v=gl1r1XV0SLw
+4. OpenAI Cookbook — *Embedding Wikipedia articles for search* (90 min, read + adapt to Ollama Cloud rather than run verbatim) — https://cookbook.openai.com/examples/embedding_wikipedia_articles_for_search
+5. OpenAI Cookbook — *Vector Databases overview* (45 min skim, sets up Week 5) — https://cookbook.openai.com/examples/vector_databases
+
+*(Optional deep dive: 3Blue1Brown — Transformers, the tech behind LLMs, "Word embeddings" chapter — https://www.youtube.com/watch?v=wjZofJX0v4M. Replaces the deleted James Briggs items in the Master Resources List too.)*
 
 **Deliverables:**
 - `llm-practice/semantic_search.py` — embed a folder of your own notes (the `python-practice/*.md` files work well) and run in-memory cosine-similarity search. No DB yet. Commit the script and one demo run's output.
@@ -446,8 +448,9 @@ Both projects are shipped by now — this is the first week where interview prep
 - (Optional) Lilian Weng — https://lilianweng.github.io/posts/2023-03-15-prompt-engineering/
 
 ### Embeddings & vector DBs
-- James Briggs embeddings video — https://www.youtube.com/watch?v=5Ef1S71q4s0
-- James Briggs vector DBs video — https://www.youtube.com/watch?v=dN8ls7zvJnU
+- Pinecone — *What are Vector Embeddings?* — https://www.pinecone.io/learn/vector-embeddings/
+- StatQuest — *Word Embedding and Word2Vec, Clearly Explained!!!* — https://www.youtube.com/watch?v=viZrOnJclY0
+- IBM Technology — *What is a Vector Database?* — https://www.youtube.com/watch?v=gl1r1XV0SLw
 - OpenAI Cookbook — Wikipedia embeddings search — https://cookbook.openai.com/examples/embedding_wikipedia_articles_for_search
 - pgvector — https://github.com/pgvector/pgvector
 
