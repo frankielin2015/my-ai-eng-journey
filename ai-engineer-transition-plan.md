@@ -175,8 +175,8 @@ Test it with one small script before starting the Week 2 materials so SDK issues
 1. Pinecone — *What are Vector Embeddings?* (25–30 min, the canonical written intro) — https://www.pinecone.io/learn/vector-embeddings/
 2. StatQuest — *Word Embedding and Word2Vec, Clearly Explained!!!* (16 min video) — https://www.youtube.com/watch?v=viZrOnJclY0
 3. IBM Technology — *What is a Vector Database?* (10 min video) — https://www.youtube.com/watch?v=gl1r1XV0SLw
-4. OpenAI Cookbook — *Embedding Wikipedia articles for search* (90 min, read + adapt to Ollama Cloud rather than run verbatim) — https://cookbook.openai.com/examples/embedding_wikipedia_articles_for_search
-5. OpenAI Cookbook — *Vector Databases overview* (45 min skim, sets up Week 5) — https://cookbook.openai.com/examples/vector_databases
+4. OpenAI Cookbook — *Embedding Wikipedia articles for search* (90 min, read + adapt to Ollama Cloud rather than run verbatim) — https://developers.openai.com/cookbook/examples/embedding_wikipedia_articles_for_search
+5. ~~OpenAI Cookbook — *Vector Databases overview*~~ — **REMOVED by OpenAI (cookbook site migration, verified dead 2026-09-06)**. Substitute, deferred to Week 5 where it's more useful anyway: Pinecone — *What is a Vector Database?* (https://www.pinecone.io/learn/vector-database/) + pgvector README (https://github.com/pgvector/pgvector) — the conceptual landscape + the Postgres trade-offs, read together as the "why pgvector" decision basis.
 
 *(Optional deep dive: 3Blue1Brown — Transformers, the tech behind LLMs, "Word embeddings" chapter — https://www.youtube.com/watch?v=wjZofJX0v4M. Replaces the deleted James Briggs items in the Master Resources List too.)*
 
@@ -195,8 +195,9 @@ Test it with one small script before starting the Week 2 materials so SDK issues
 
 **Why pgvector (not Pinecone):** you already know Postgres cold from Walmart. Demonstrating AI engineering on scaled Postgres is a *stronger* story than introducing a new vendor DB. Tier-1 interviews specifically probe "why HNSW vs IVFFlat" — pgvector forces you to learn this.
 
-**Materials:**
-1. OpenAI Cookbook — *Using vector databases for embeddings search with PostgreSQL* (90 min, run it) — https://cookbook.openai.com/examples/vector_databases/using_vector_databases_for_embeddings_search
+**Materials:** *(Revised 2026-09-06 — OpenAI Cookbook's pgvector notebook was deleted in the cookbook site migration; substituted with verified equivalents.)*
+1. Supabase — *pgvector guide* (90 min, run the embed→store→index→query flow locally with your own Postgres, not Supabase's cloud — same SQL, no lock-in) — https://supabase.com/docs/guides/database/extensions/pgvector — *(covers vector columns, HNSW/IVFFlat indexing, querying in plain SQL; the "Going to production" pages address scaling trade-offs vs dedicated vector DBs)*
+   - OpenAI-hosted version of the same flow (live): https://developers.openai.com/cookbook/examples/vector_databases/supabase/semantic-search
 2. pgvector README (30 min, focus on the indexing section — HNSW vs IVFFlat) — https://github.com/pgvector/pgvector
 3. AWS Prescriptive Guidance — *Vector search in RAG with pgvector* (30 min skim) — https://docs.aws.amazon.com/prescriptive-guidance/latest/retrieval-augmented-generation-options/vector-search.html
 4. James Briggs — *Intro to Retrieval Augmented Generation* (30 min video) — https://www.youtube.com/watch?v=u47GtXwePms
@@ -451,7 +452,9 @@ Both projects are shipped by now — this is the first week where interview prep
 - Pinecone — *What are Vector Embeddings?* — https://www.pinecone.io/learn/vector-embeddings/
 - StatQuest — *Word Embedding and Word2Vec, Clearly Explained!!!* — https://www.youtube.com/watch?v=viZrOnJclY0
 - IBM Technology — *What is a Vector Database?* — https://www.youtube.com/watch?v=gl1r1XV0SLw
-- OpenAI Cookbook — Wikipedia embeddings search — https://cookbook.openai.com/examples/embedding_wikipedia_articles_for_search
+- OpenAI Cookbook — Wikipedia embeddings search — https://developers.openai.com/cookbook/examples/embedding_wikipedia_articles_for_search
+- Pinecone — *What is a Vector Database?* — https://www.pinecone.io/learn/vector-database/
+- Supabase pgvector guide — https://supabase.com/docs/guides/database/extensions/pgvector
 - pgvector — https://github.com/pgvector/pgvector
 
 ### Evals
