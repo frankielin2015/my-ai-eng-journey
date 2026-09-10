@@ -182,9 +182,9 @@ Test it with one small script before starting the Week 2 materials so SDK issues
 *(Optional deep dive: 3Blue1Brown — Transformers, the tech behind LLMs, "Word embeddings" chapter — https://www.youtube.com/watch?v=wjZofJX0v4M. Replaces the deleted James Briggs items in the Master Resources List too.)*
 
 **Deliverables:**
-- `llm-practice/semantic_search.py` — embed a folder of your own notes (the `python-practice/*.md` files work well) and run in-memory cosine-similarity search. No DB yet. Commit the script and one demo run's output.
+- ✅ `llm-practice/src/week4/semantic_search.py` — embeds `python-practice/*.md`, in-memory hand-written cosine search, no DB. Committed with demo run (`docs/wk4-demo-run.md`). Stack note: embeddings via **local Ollama** `nomic-embed-text` (768 dims) — Ollama Cloud has no embeddings endpoint (probe-verified). Demo highlight: query "function wrapper" (score 0.537) retrieves the decorator cheatsheet with zero keyword overlap — semantic match working.
 
-**Success test:** Explain to a colleague why embedding a query and a document with the same model makes them comparable in vector space. What breaks if you mix models?
+**Success test:** ✅ (2026-09-09) Explained: same model = same coordinate map, so query and doc vectors are comparable; mixing models compares locations from different maps — silently (no errors, plausible scores, wrong rankings — the production-incident failure mode).
 
 **Optional deep dive:** Simon Willison — *Embeddings: what they are and why they matter* — https://simonwillison.net/2023/Oct/23/embeddings/
 
