@@ -1,0 +1,105 @@
+# promptfoo eval — sentiment_v1 vs sentiment_v2 (Week 3 deliverable)
+#
+# Runs both prompt versions against the same test cases on Ollama Cloud,
+# producing the v1→v2 accuracy delta recorded in prompts/CHANGELOG.md.
+#
+# Provider note: promptfoo's native `ollama:` provider speaks Ollama's NATIVE
+# protocol (/api/chat), which ollama.com cloud is not documented to serve.
+# Ollama Cloud is OpenAI-protocol compatible, so we use the openai:chat
+# provider with apiBaseUrl — same shape as src/client.py.
+#
+# Run:
+#   npx promptfoo@latest eval --no-cache --output promptfoo-results.json
+#   (the --output flag skips the web viewer; summary table still prints)
+
+prompts:
+  - file://prompts/sentiment_v1.md
+  - file://prompts/sentiment_v2.md
+
+providers:
+  - id: openai:chat:kimi-k3:cloud
+    label: kimi-k3:cloud
+    config:
+      apiBaseUrl: https://ollama.com/v1
+      apiKeyEnvar: OLLAMA_API_KEY
+      temperature: 0.2
+  - id: openai:chat:gpt-oss:20b
+    label: gpt-oss:20b
+    config:
+      apiBaseUrl: https://ollama.com/v1
+      apiKeyEnvar: OLLAMA_API_KEY
+      temperature: 0.2
+
+# v2's raw output is: <thinking>...</thinking>\n{json}
+# This transform strips everything up to and including the fence so that
+# is-json / label assertions see the payload. For v1 output (bare JSON,
+# no fence) it's a no-op. Same extraction logic as lab_sentiment.py TODO 5,
+# re-encoded as an eval-harness transform: custom wire format ⇒ matching
+# eval-side parser.
+defaultTest:
+  options:
+    transform: file://promptfoo_transform.py
+  assert:
+    # every test, every prompt, every model: output must be valid JSON
+    # post-transform, and the four required keys must be present.
+    - type: is-json
+      value:
+        type: object
+        required: [sentiment, confidence, key_topics, reasoning]
+        properties:
+          sentiment:
+            type: string
+            enum: [positive, negative, mixed, neutral]
+          confidence: { type: number }
+          key_topics: { type: array }
+          reasoning: { type: string }
+
+tests:
+  - description: "positive — enthusiastic praise"
+    vars:
+      user_text: "The keyboard feels great to type on and the battery lasts a full week."
+    assert:
+      - type: python
+        value: "json.loads(output)['sentiment'] == 'positive'"
+
+  - description: "negative — product + service failure"
+    vars:
+      user_text: "Broke after 2 weeks. Customer service hung up on me. Would not recommend."
+    assert:
+      - type: python
+        value: "json.loads(output)['sentiment'] == 'negative'"
+
+  - description: "mixed — equal positive and negative claims"
+    vars:
+      user_text: "Great camera but the battery dies by noon."
+    assert:
+      - type: python
+        value: "json.loads(output)['sentiment'] == 'mixed'"
+
+  - description: "neutral — no evaluative language"
+    vars:
+      user_text: "It's a phone. It turns on. The box was fine."
+    assert:
+      - type: python
+        value: "json.loads(output)['sentiment'] == 'neutral'"
+
+  - description: "negation trap — negative cue, expectation-neutralized"
+    vars:
+      user_text: "The screen is scratched but it was like that in the listing, so no complaints."
+    assert:
+      - type: python
+        value: "json.loads(output)['sentiment'] == 'positive'"
+
+  - description: "edge — mixed with technical jargon"
+    vars:
+      user_text: "Setup was painless and the WiFi 6E speeds are fantastic, but the companion app crashes every other day."
+    assert:
+      - type: python
+        value: "json.loads(output)['sentiment'] == 'mixed'"
+
+  - description: "edge — mild negative, hedged language"
+    vars:
+      user_text: "It does the job, though the scroll wheel sticks sometimes and the finish scratches easily."
+    assert:
+      - type: python
+        value: "json.loads(output)['sentiment'] == 'negative'"

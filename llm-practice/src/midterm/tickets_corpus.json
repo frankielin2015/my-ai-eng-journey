@@ -1,0 +1,14 @@
+[
+  {"id": "T-001", "text": "My package was supposed to arrive 3 days ago but I still haven't gotten it. Tracking hasn't updated in a week.", "category": "shipping", "severity": "medium"},
+  {"id": "T-002", "text": "I was charged twice for my monthly subscription. Please refund the duplicate charge immediately.", "category": "billing", "severity": "high"},
+  {"id": "T-003", "text": "Can't log in to my account — keep getting 'invalid credentials' even after resetting my password.", "category": "account", "severity": "high"},
+  {"id": "T-004", "text": "The app crashes every time I try to open the search page on Android 14.", "category": "bug", "severity": "high"},
+  {"id": "T-005", "text": "Would love to see a dark mode added to the dashboard.", "category": "feature_request", "severity": "low"},
+  {"id": "T-006", "text": "How do I update my billing address? Can't find it in settings.", "category": "account", "severity": "low"},
+  {"id": "T-007", "text": "Tracking says delivered but there's nothing at my door. I've been waiting all day.", "category": "shipping", "severity": "urgent"},
+  {"id": "T-008", "text": "Got an invoice for a plan I cancelled 6 months ago. Why am I still being charged?", "category": "billing", "severity": "urgent"},
+  {"id": "T-009", "text": "Small suggestion: would be nice to filter the analytics view by date range.", "category": "feature_request", "severity": "low"},
+  {"id": "T-010", "text": "Export to CSV is broken — produces an empty file with just the header row.", "category": "bug", "severity": "medium"},
+  {"id": "T-011", "text": "Add SSO support, please. Our company requires it for compliance.", "category": "feature_request", "severity": "medium"},
+  {"id": "T-012", "text": "URGENT: production database connection is failing across all regions. Need help ASAP.", "category": "bug", "severity": "urgent"}
+]
