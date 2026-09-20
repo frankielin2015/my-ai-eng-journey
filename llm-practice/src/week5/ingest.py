@@ -35,6 +35,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from client import make_embedder
 
 from week5 import db
+from week5.chunking import chunk_recursive
 
 CORPUS_PATH = Path(__file__).resolve().parent.parent / "midterm" / "tickets_corpus.json"
 
@@ -109,6 +110,51 @@ def upsert_tickets(conn: "psycopg2.extensions.connection", tickets: list[dict]) 
             
 
 
+
+def ingest_policy_chunks(policy_path: Path | None = None) -> int:
+    """Exercise 9: chunked re-ingest on policy.md.
+
+    Concept: Real corpora aren't single rows of 30-word tickets. A 4 KB policy
+             document needs to be split into chunks BEFORE embedding, otherwise
+             we'd embed four kilobytes as one vector and lose retrieval
+             precision. Reuse everything you built in Exercise 4 — chunker for
+             splitting, embedder for vectors, upsert for the SQL write.
+             The trick is that policy rows live in the SAME table as tickets;
+             we just use a different ID prefix (`P-NNN`) so they don't collide.
+
+    Write:   1. Read `policy.md` as a string. If `policy_path` is None, default
+                to the file at `src/week5/policy.md` (use `Path(__file__).parent`).
+             2. Call `chunk_recursive(policy_text, size=200)` to get a list of
+                chunk strings.
+             3. Build `records: list[dict]` — one dict per chunk with
+                keys: id ("P-000", "P-001", ...), text (the chunk), category
+                ("policy"), severity ("info"). Use a list comprehension with
+                `enumerate(chunks)`.
+             4. Reuse `embed_tickets(records)` to vectorize (it mutates in place,
+                adding an "embedding" key of 768 floats per record).
+             5. Reuse `upsert_tickets(conn, records)` inside a `with
+                db.get_connection() as conn:` block. Don't open a second
+                connection to verify count — just reuse, or open one fresh.
+             6. Return the actual number of chunks written (use
+                `len(records)`, not a separate count).
+
+    Verify:  Running this function writes N rows (where N = len(chunks)). Each
+             row has id `P-NNN`, category `policy`, a 768-dim embedding from
+             `nomic-embed-text`, and `embedded_with='nomic-embed-text'`.
+             Re-running is idempotent (`upsert_tickets` ON CONFLICT). Call
+             `check_drift_warn(conn)` to confirm no model drift.
+    """
+    if not policy_path:
+        policy_path = Path(__file__).resolve().parent / "policy.md"
+    texts = policy_path.read_text(encoding="utf-8")
+    chunks = chunk_recursive(texts)
+    records = []
+    for i, chunk in enumerate(chunks):
+         records.append({"id": f"P-{i:03d}", "text": chunk, "category": "policy", "severity": "info"})
+    embed_tickets(records)
+    with db.get_connection() as conn:    
+        upsert_tickets(conn, records)
+    return len(records)
 
 def main() -> int:
     """Exercise 4 (partial): the single-connection ingest flow.

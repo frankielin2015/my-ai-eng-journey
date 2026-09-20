@@ -115,10 +115,10 @@ def check_drift_warn(conn: "psycopg2.extensions.connection") -> None:
     Verify:  Manually `UPDATE tickets SET embedded_with = 'other-model' WHERE
              id = 'T-001'`, run a query, and see the warning; restore the row.
     """
-    raise NotImplementedError(
-        "Exercise 7: implement check_drift_warn(conn) on top of db.check_drift."
-    )
-
+    drifted = db.check_drift(conn)
+    if drifted:
+        print(f"WARNING: {len(drifted)} rows embedded with {drifted}, "
+              f"not {db.EMBEDDING_MODEL}. Query results may be unreliable.")
 
 def run_query(query: str, top_k: int = TOP_K, operator: str = "<=>") -> None:
     """Query command: open conn -> drift check -> embed -> search -> print.

@@ -46,7 +46,19 @@ def chunk_fixed(text: str, size: int = 200, overlap: int = 40) -> list[str]:
              `ceil((1000 - 40) / (200 - 40)) = 6`; the first 40 chars of chunk
              n+1 equal the last 40 chars of chunk n.
     """
-    raise NotImplementedError("Exercise 8: implement chunk_fixed(text, size, overlap).")
+    assert 0 <= overlap < size, f"overlap ({overlap}) must be in [0, {size}) so the window advances"
+    # Short text fits in one chunk; emit it whole if non-empty.
+    if len(text) <= size:
+        return [text] if text.strip() else []
+    chunks = []
+    for i in range(0, len(text), size - overlap):
+        chunk = text[i : i + size]
+        if not chunk.strip():        # drop whitespace-only / empty
+            continue
+        if len(chunk) != size:       # drop trailing partial chunk
+            continue
+        chunks.append(chunk)
+    return chunks
 
 
 def chunk_sentences(text: str, size: int = 200) -> list[str]:
@@ -64,7 +76,27 @@ def chunk_sentences(text: str, size: int = 200) -> list[str]:
              `<= size` chars, and concatenating the chunks with a space
              reproduces the original sentence sequence.
     """
-    raise NotImplementedError("Exercise 8: implement chunk_sentences(text, size).")
+    sentences = split_sentences(text)
+    chunks = []                          # finished chunks go here
+    current = ""                         # chunk we're building right now (string)
+    for sentence in sentences:
+        # What the chunk would look like if we appended this sentence.
+        # First sentence has no leading space; later ones are space-joined.
+        candidate = current + " " + sentence if current else sentence
+
+        # If we already have content AND the candidate would overflow,
+        # close the current chunk and start a fresh one with this sentence.
+        if current and len(candidate) > size:
+            chunks.append(current)
+            current = sentence           # begin new chunk with the oversized-to-be sentence
+        else:
+            current = candidate          # keep extending the current chunk
+
+    # After the loop, anything still in `current` wasn't flushed — flush it now.
+    if current:
+        chunks.append(current)
+    return chunks
+
 
 
 def chunk_recursive(text: str, size: int = 200, overlap: int = 40) -> list[str]:
@@ -83,4 +115,71 @@ def chunk_recursive(text: str, size: int = 200, overlap: int = 40) -> list[str]:
              stay attached to their paragraph, and the number of chunks is
              smaller than `chunk_fixed`'s for the same size.
     """
-    raise NotImplementedError("Exercise 8: implement chunk_recursive(text, size, overlap).")
+    # Separator ladder: try most semantic first, fall back to finest.
+    SEPARATORS = ["\n\n", "\n", ". ", " "]
+
+    def split_piece(piece: str, level: int) -> list[str]:
+        """Split `piece` using SEPARATORS[level] (or finer if it overflows)."""
+
+        # Base case 1: the piece is short enough to keep whole.
+        if len(piece) <= size:
+            return [piece]
+
+        # Base case 2: ran out of separators — must keep this piece as-is,
+        # even if it exceeds `size`. (Will be flagged as oversized downstream.)
+        if level >= len(SEPARATORS):
+            return [piece]
+
+        separator = SEPARATORS[level]
+
+        # If this separator isn't in the piece, try the next (finer) one.
+        if separator not in piece:
+            return split_piece(piece, level + 1)
+
+        # Split on the separator, then recurse on each child with the next level.
+        # Children might still be too big — recursion handles them.
+        sub_pieces: list[str] = []
+        for child in piece.split(separator):
+            sub_pieces.extend(split_piece(child, level + 1))
+
+        # Re-merge children back up to `size` so we don't spray tiny chunks.
+        return merge_pieces(sub_pieces, separator, size)
+
+    def merge_pieces(pieces: list[str], separator: str, max_size: int) -> list[str]:
+        """Greedily pack consecutive `pieces` (joined by `separator`) into chunks
+        whose total length is <= `max_size`. Headings (`#`-prefixed) are sticky
+        with the next piece rather than the previous one, so a heading stays
+        attached to its paragraph. Drops empty/whitespace-only pieces."""
+        chunks: list[str] = []
+        current = ""
+        for piece in pieces:
+            # Skip blank pieces produced by edge-of-text separators.
+            if not piece.strip():
+                continue
+            # Headings are "sticky-first": flush current and start fresh with
+            # the heading so the body that follows stays paired with it.
+            if piece.lstrip().startswith("#") and current:
+                chunks.append(current)
+                current = piece
+                continue
+            # First piece initializes the chunk; later pieces are appended.
+            if not current:
+                current = piece
+                continue
+            candidate = current + separator + piece
+            # If the candidate fits, extend; otherwise flush and start fresh.
+            if len(candidate) <= max_size:
+                current = candidate
+            else:
+                chunks.append(current)
+                current = piece
+        if current:
+            chunks.append(current)
+        return chunks
+
+    # `overlap` is reserved for future tuning; the recursive split+merge already
+    # gives boundary context via the separators joining adjacent chunks.
+    _ = overlap
+
+    return split_piece(text, 0)
+    
