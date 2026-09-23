@@ -15,7 +15,7 @@ from __future__ import annotations
 import os
 import uuid
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from openai import OpenAI
 
 
@@ -25,7 +25,7 @@ def make_client() -> OpenAI:
     Kept for W2/W3/W4 scripts that imported this. New code should use
     make_chat_client() (OpenCode Go) instead.
     """
-    load_dotenv()
+    load_dotenv(find_dotenv())
     return OpenAI(
         base_url="https://ollama.com/v1",
         api_key=os.environ["OLLAMA_API_KEY"],
@@ -52,7 +52,7 @@ def make_chat_client() -> OpenAI:
          name like "OpenAI/Python". The default openai-python UA would
          violate this and trigger a 400.
     """
-    load_dotenv()
+    load_dotenv(find_dotenv())
     return OpenAI(
         base_url="https://opencode.ai/zen/go/v1",
         api_key=os.environ["OPENCODE_API_KEY"],
@@ -71,7 +71,7 @@ Local Ollama accepts any non-empty api_key, so the OLLAMA_API_KEY env var
 is reused as a placeholder — it does not need to be a valid key.
 """
 def make_embedder() -> OpenAI:
-    load_dotenv()
+    load_dotenv(find_dotenv())
     return OpenAI(
         base_url="http://localhost:11434/v1",
         api_key=os.environ["OLLAMA_API_KEY"],
