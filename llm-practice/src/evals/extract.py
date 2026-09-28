@@ -1,80 +1,51 @@
-"""Week 6 — Stub extractor.
+"""Week 6 — Extractor: the system under test.
 
-This is the "system under test" for golden_dataset.py. It exists so
-judge.py can run end-to-end. Replace the stub with a real prompt once
-you've verified the dataset shape.
+Turns a short meeting note into action items. This is the FIRST LLM
+call in the eval pipeline; judge.py (the SECOND call) grades its
+output, and run_eval.py sequences both across ready_tests().
 
-────────────────────────────────────────────────────────────────────────
+CONTRACT
+    extract_action_items(text) -> list[dict]
+    each dict: {"action": str, "owner": str|None, "due_date": str|None}
+    Empty list means "nothing to extract" — run_eval.py's hardened
+    bridge fallback handles that case (run_eval.py § Step 3).
 
-Step 1 — Read the signature  (verb: read)
-
-  do:   Note that extract_action_items(text) -> list[dict]
-        Each dict MUST have this shape (matching golden_dataset.py):
-          {"action": str, "owner": str|None, "due_date": str|None}
-        judge.py compares dict-to-dict — mismatched keys = wrong scores.
-  done: you know what shape judge.py will consume.
-
-────────────────────────────────────────────────────────────────────────
-
-Step 2 — Make it return SOMETHING  (verb: edit)
-
-  do:   In the function body at the bottom of this file, look for the
-        `# TODO Step 2:` marker (right above `return []`). Replace the
-        line below it with a non-empty stub:
-          return [{"action": text, "owner": None, "due_date": None}]
-        (this is wrong but runnable — judge.py will see all 3 fields
-        and the field-level score will be predictable)
-  done: `python -c "from evals.extract import extract_action_items;
-                   print(extract_action_items('test'))"` prints a
-        non-empty list with one dict.
-
-────────────────────────────────────────────────────────────────────────
-
-Step 3 — Make it RIGHT  (verb: write)
-
-  do:   In the SAME place (where Step 2's stub is), replace the stub
-        with a real LLM call. The API pattern from src/client.py:83-89:
-          client = make_chat_client()
-          prompt = (
-            f"Extract action items from this meeting note.\n"
-            f"Return a JSON list of dicts with keys: "
-            f"action, owner, due_date.\n"
-            f"Use null for fields that don't apply.\n\n"
-            f"Note: {text}"
-          )
-          response = client.chat.completions.create(
-            model="kimi-k3",  # see src/client.py:43 for other models
-            messages=[{"role": "user", "content": prompt}],
-          )
-          content = response.choices[0].message.content
-          # Strip ```json ... ``` fences, then json.loads() -> list[dict]
-          return parsed_list
-  done: output matches the `expected` shape for at least one row in
-        golden_dataset (run judge.py to verify).
-
-────────────────────────────────────────────────────────────────────────
-
-## WHERE to write the code
-
-All edits happen INSIDE `extract_action_items()` at the very bottom of
-this file. Look for the two TODO markers right above `return []`:
-    # TODO Step 2: ...
-    # TODO Step 3: ...
-Step 2 replaces the `return []` line. Step 3 replaces Step 2's line
-with the LLM call template from the docstring above.
+DECISIONS
+- Model: deepseek-v4.1-flash — cheaper than kimi-k2/kimi-k3. Same
+  model grades its own output downstream (self-preference bias is
+  documented in run_eval.py's DECISIONS block).
+- temperature=0: eval numbers must be reproducible. With sampling
+  noise, a prompt change cannot be told apart from randomness —
+  which would undercut the README's "what we changed" story.
+  (Matches judge.py's determinism.)
+- Prompted JSON is a request, not a constraint: the model can return
+  prose, fences, or extra fields at any time. That's why the fence
+  strip + json.loads() pattern exists — and why judge.py wraps its
+  whole body in try/except while this file deliberately does NOT
+  (judge.py owns the never-raise contract; different failure surfaces
+  stay visible: extract raises → run_eval makes an extract-error row).
+- Hand-rolled on purpose (no LangChain, no structured-output lib):
+  the failure modes ARE the curriculum.
 
 ────────────────────────────────────────────────────────────────────────
 
 ## WHEN YOU GET STUCK
 
-- `ModuleNotFoundError: No module named 'client'` → path shim below
-  isn't running. Run from inside `src/`.
-- judge.py says "no items found" → stub still returns []. Run Step 2.
-- JSON parse errors → LLM returned prose, not JSON. Strip markdown
-  fences (```json ... ```) before json.loads().
-- KeyError on `action` / `owner` / `due_date` → prompt returned
-  different keys. Re-read Step 1's schema.
-- 401 / API key errors → check OPENCODE_API_KEY is set in .env.
+- 401 / API key errors → check OPENCODE_API_KEY is set in .env
+  (client.py finds it via find_dotenv()).
+- json.JSONDecodeError → the model returned prose, not a JSON list.
+  Inspect `content` in the __main__ debugger below.
+- KeyError on `action` / `owner` / `due_date` → the LLM returned
+  different keys. The user prompt names the exact schema — check it
+  wasn't paraphrased.
+- ModuleNotFoundError: No module named 'client' → run from inside
+  src/ so the path shim below resolves sibling imports.
+
+## EVAL OF THE EVAL
+
+If an extracted row looks wrong on a golden test, do FAILURE TRIAGE
+(golden_dataset.py header) BEFORE editing this prompt:
+    1. TEST WRONG   2. TEST TOO STRICT   3. SYSTEM BROKEN
 """
 
 from __future__ import annotations
@@ -91,7 +62,7 @@ from client import make_chat_client
 
 
 def extract_action_items(text: str) -> list[dict]:
-    """Stub extractor — returns []. Replace per Steps 2-3.
+    """Extract action items from one meeting note (the system under test).
 
     Args:
         text: A meeting notes snippet (one of golden_dataset's `input`).
@@ -101,21 +72,26 @@ def extract_action_items(text: str) -> list[dict]:
             {"action": str, "owner": str|None, "due_date": str|None}
         Empty list means "nothing to extract" (matches test-004).
 
-    Schema MUST match golden_dataset.py's `expected`:
-        {"action": "...", "owner": "...", "due_date": "..."}
+    Raises:
+        json.JSONDecodeError / KeyError: if the LLM returns prose or
+        an unexpected shape. run_eval.py § Step 3 wraps this call so
+        an exception becomes an "extract-error:" row instead of
+        killing the run.
     """
-    # TODO Step 2: replace the `return []` line below with a non-empty stub
-    #   matching the schema above. Suggested stub:
-    #     return [{"action": text, "owner": None, "due_date": None}]
-    # TODO Step 3: replace that stub with the LLM call template from
-    #   the docstring § Step 3 (uses make_chat_client + chat.completions.create)
     response = make_chat_client().chat.completions.create(
-        model= "deepseek-v4.1-flash",
+        model="deepseek-v4.1-flash",
+        temperature=0,  # determinism: eval numbers must be reproducible
         messages=[
-             {"role": "system", "content": "You are a meeting notes extractor, you are expert at extract meeting notes and you are known for precision and correctness"},
-             {"role": "user", "content": f"""extract action items from this meeting note: {text}; 
-             Return a JSON list of dicts with keys: action, owner, due_date. Use null for fields that don't apply."""}
-              ]
+            {"role": "system",
+             "content": ("You are a meeting notes extractor, you are "
+                         "expert at extract meeting notes and you are "
+                         "known for precision and correctness")},
+            {"role": "user",
+             "content": (f"extract action items from this meeting note: {text}; "
+                         "Return a JSON list of dicts with keys: action, "
+                         "owner, due_date. Use null for fields that don't "
+                         "apply.")},
+        ],
     )
     content = response.choices[0].message.content
     cleaned = re.sub(r"\`\`\`(?:json)?", "", content).strip()
