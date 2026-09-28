@@ -510,11 +510,11 @@ Update after each week. (Mark `[x]` when complete.)
 ### Phase 1 — LLM Foundations
 - [x] Week 2 — OpenAI + Anthropic SDKs, structured outputs, function calling — **COMPLETE 2026-08-29**
 - [x] Week 3 — Prompt engineering + versioning — **COMPLETE 2026-09-05** (promptfoo eval: v1 0/14 vs v2 6/14; adversarial lab; schema-migrations doc)
-- [ ] Week 4 — Embeddings + semantic search
+- [x] Week 4 — Embeddings + semantic search — **COMPLETE** (committed 2026-09-18; semantic_search.py over ticket corpus)
 
 ### Phase 2 — RAG + Evals + Project 1
-- [ ] Week 5 — pgvector + RAG basics
-- [ ] Week 6 — Evals (golden dataset, LLM-as-judge)
+- [x] Week 5 — pgvector + RAG basics — **COMPLETE 2026-09-20** (RAG over 12 tickets, chunking, HNSW/IVFFlat bake-off) + midterm triage agent (11/11 tests, injection probe)
+- [x] Week 6 — Evals (golden dataset, LLM-as-judge) — **COMPLETE 2026-09-28** (15-row golden dataset across 15 dimensions, orthogonal judge kimi-k3 vs deepseek extractor, judge A/B measured self-preference bias, calibrated 3-run numbers in README; repo `llm-practice/src/evals/`)
 - [ ] Week 7 — **Project 1: Agent Observability Dashboard shipped**
 
 ### Phase 3 — Agents + Project 2
