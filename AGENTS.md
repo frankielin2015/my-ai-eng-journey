@@ -10,7 +10,7 @@ A personal learning/workspace monorepo for an AI-engineer transition (see `ai-en
 
 - `ai-engineer-transition-plan.md` — master career plan (living document; decisions log explains why things are the way they are)
 - `HANDOFF-*.md` — session-to-session handoff notes; read the most recent one before picking up work
-- `llm-practice/` — LLM engineering practice (Python 3.14, `uv`, structured outputs, evals, RAG/pgvector, midterm project). Uses `openai` SDK with `base_url` pointing at Ollama (OpenAI-compatible). Evals run via `promptfooconfig.yaml` in this folder.
+- `llm-practice/` — LLM engineering practice (Python 3.14, `uv`, structured outputs, evals, RAG/pgvector, midterm project). Uses `openai` SDK via an **OpenCode Go** gateway (`base_url` override, OpenAI-compatible; previously Ollama — client.py is the source of truth). Evals run via `promptfooconfig.yaml` in this folder.
 - `python-practice/` — completed Python TDD gym (67/67 green). Mostly historical; don't refactor for fun.
 - `docker-compose.yml` — pgvector (pg16) dev database for RAG work, db `rag`, user/pass `postgres`.
 - `skills-lock.json` — pinned external skills (mattpocock/skills).
