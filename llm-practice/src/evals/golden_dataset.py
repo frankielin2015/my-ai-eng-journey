@@ -369,6 +369,119 @@ GOLDEN_DATASET = [
         ),
         "provenance": "user",
     },
+
+    # ---------------------------------------------------------------
+    # GROWTH rows (Step 8 complete: 9 → 15). Inputs are SYNTHESIZED
+    # learning examples — deliberate for this repo: the user is
+    # studying, not extracting from a live meeting feed. Marked
+    # "synthesized" in provenance so the README story stays honest
+    # (C2 caveat: real-world sourcing would strengthen the eval; for
+    # learning purposes, dimensional diversity is the priority).
+    # ---------------------------------------------------------------
+
+    {
+        "id": "test-010",
+        "dimension": "relative_date_offset",
+        "input": "Mike to have the pricing page updated in two weeks.",
+        "expected": {
+            "action": "update the pricing page",
+            "owner": "Mike",
+            "due_date": "in two weeks",
+        },
+        "added_because": (
+            "Confirms system preserves offset-style relative dates ('in two "
+            "weeks'), not just weekday names (test-001's 'Friday'). "
+            "Does NOT rule out time_only_deadline or multi_action."
+        ),
+        "provenance": "synthesized",
+    },
+    {
+        "id": "test-011",
+        "dimension": "time_only_deadline",
+        "input": "Ashley to send the signed contract back by 5pm today.",
+        "expected": {
+            "action": "send the signed contract",
+            "owner": "Ashley",
+            "due_date": "5pm today",
+        },
+        "added_because": (
+            "Confirms system treats a time-without-day ('5pm today') as a "
+            "due_date and preserves its string form. "
+            "Does NOT rule out relative_date_offset or owner_is_group."
+        ),
+        "provenance": "synthesized",
+    },
+    {
+        "id": "test-012",
+        "dimension": "fyi_not_action",
+        "input": "FYI — the conference room booking system is back up.",
+        "expected": {
+            "action": None,
+            "owner": None,
+            "due_date": None,
+        },
+        "added_because": (
+            "Confirms system does NOT hallucinate an action from an "
+            "informational note. Distinct from test-005 (discussion): that "
+            "row is neutral prose; this one is explicitly addressed TO "
+            "readers ('FYI') — a different lure for hallucination. "
+            "Does NOT rule out recurring_task or ambiguous_owner."
+        ),
+        "provenance": "synthesized",
+    },
+    {
+        "id": "test-013",
+        "dimension": "passive_voice_action",
+        "input": "The draft proposal should be circulated by Wednesday.",
+        "expected": {
+            "action": "circulate the draft proposal",
+            "owner": None,
+            "due_date": "Wednesday",
+        },
+        "added_because": (
+            "Confirms system extracts an action from passive voice with the "
+            "owner correctly None (nobody named). Distinct from implicit_owner "
+            "(test-002): there the actor is 'team'; here there is no actor "
+            "phrase at all. Does NOT rule out ambiguous_owner or hedged_commitment."
+        ),
+        "provenance": "synthesized",
+    },
+    {
+        "id": "test-014",
+        "dimension": "owner_is_group",
+        "input": "Marketing to review the landing page copy.",
+        "expected": {
+            "action": "review the landing page copy",
+            "owner": "Marketing",
+            "due_date": None,
+        },
+        "added_because": (
+            "Confirms system preserves a GROUP as owner (case_policy applies: "
+            "'Marketing' stays 'Marketing') rather than inventing a person. "
+            "Does NOT rule out ambiguous_owner or multi_action."
+        ),
+        "provenance": "synthesized",
+    },
+    {
+        "id": "test-015",
+        "dimension": "ambiguous_owner",
+        "input": "Raj or Dana to book the demo room for Thursday.",
+        "expected": {
+            "action": "book the demo room",
+            "owner": None,
+            "due_date": "Thursday",
+        },
+        "added_because": (
+            "Confirms system does NOT guess ONE name when the note names "
+            "two candidates ('Raj or Dana'). DECIDED (user, after seeing "
+            "the judge score 'Raj or Dana' as hallucination): owner=None "
+            "remains the gold — 'Raj or Dana' is an unresolved QUESTION, "
+            "not an owner statement; passthrough would launder ambiguity "
+            "into a field that downstream tools will treat as a person. "
+            "Does NOT rule out owner_is_group or relative_date_offset."
+        ),
+        "provenance": "synthesized",
+    },
 ]
 
 

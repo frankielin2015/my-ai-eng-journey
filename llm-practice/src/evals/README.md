@@ -13,13 +13,14 @@ Task: extract `{action, owner, due_date}` from short meeting notes
 
 | metric | value | how measured |
 |---|---|---|
-| pairs in golden_dataset | 9 (target 15-20, pending) | `len(ready_tests())` |
-| distinct dimensions covered | 9/9 | one per row |
+| pairs in golden_dataset | **15** (plan target 15-20 ✓) | `len(ready_tests())` |
+| distinct dimensions covered | **15/15** | one per row |
 | judge policies with rubric | 4 of 4 | keys of `SCORING_CONTRACT` |
-| mean overall (blend) | **5.22** | `run_eval.py` aggregate |
-| mean overall — value rows (n=6) | **4.83** | split mean |
-| mean overall — negative rows (n=3) | **6.00** | split mean |
-| full run latency | ~80-90s for 9 rows (~10s/row, 2 LLM calls/row) | `perf_counter` timing |
+| mean overall (blend, 3 runs) | **5.60–5.73** | `run_eval.py` aggregate |
+| mean overall — value rows (n=11) | **5.45–5.64** | split mean |
+| mean overall — negative rows (n=4) | **6.00 (stable across all runs)** | split mean |
+| full run latency | ~3.3 min for 15 rows (~13s/row, 2 LLM calls/row) | `perf_counter` timing |
+| run-to-run variance (blended) | ±0.13 over 3 runs | repeat runs — the reason we report ranges |
 
 ### The judge A/B experiment (same-model vs orthogonal judge)
 
@@ -90,14 +91,10 @@ remains. Consequences we operate by:
 
 ### What the eval caught (eval doing its job)
 
-- **test-002 scored 3/6 consistently**: the extractor absorbs
-  "next Monday @ 12:30PM" into the action string and misses
-  `due_date` as its own field. Real extraction bug, caught by the
-  rubric, reproducible across judges.
-- **test-008 (hedged)**: judged differently by different judges —
-  rubric under-specification, not extractor or harness failure.
-  (FAILURE TRIAGE: test wrong? → too strict? → system broken? In
-  this case: rubric ambiguous.)
+- **test-002 scored 3/6 consistently across ALL runs and BOTH judges**: the extractor absorbs "next Monday @ 12:30PM" into the action string and misses `due_date` as its own field. Real extraction bug, caught by the rubric, fully reproducible.
+- **test-015 (ambiguous_owner)**: extractor passed "Raj or Dana" through verbatim; judge scored 0 (none_policy rubric[0]: expected None, got a value). User decision on the gold: **owner=None stands** — "Raj or Dana" is an unresolved question, not an owner statement; passthrough would launder ambiguity into a person-field. (Decision recorded in the row's `added_because`.)
+- **test-008 (hedged)**: judged differently across runs AND models (2/5/6) — rubric under-specification for hedged commitments remains the one open eval issue. (FAILURE TRIAGE: test wrong? → too strict? → system broken? Here: rubric ambiguous.)
+- **test-007**: dropped 'Tuesday' from 'COB Tuesday' in one run (5/6) — extractor drift, the nondeterminism finding in action.
 
 ## Why this matters
 
@@ -131,7 +128,7 @@ deferred to Weeks 7-8.
 | File | Role | Status |
 |---|---|---|
 | `__init__.py` | Package marker, docstring | ✅ shipped |
-| `golden_dataset.py` | 9 (input, expected) pairs + `SCORING_CONTRACT` + `ready_tests()` guard | ✅ shipped (growth to 15-20 pending) |
+| `golden_dataset.py` | 15 (input, expected) pairs + `SCORING_CONTRACT` + `ready_tests()` guard | ✅ shipped (plan target met) |
 | `extract.py` | The system under test (deepseek-v4.1-flash, temp=0) | ✅ shipped |
 | `judge.py` | LLM-as-judge (kimi-k3, orthogonal) vs `SCORING_CONTRACT`, never-raise | ✅ shipped |
 | `run_eval.py` | Harness: extract → judge → table + aggregate + split means | ✅ shipped |
