@@ -8,7 +8,8 @@ A personal learning/workspace monorepo for an AI-engineer transition (see `ai-en
 
 ## Layout
 
-- `ai-engineer-transition-plan.md` — master career plan (living document; decisions log explains why things are the way they are)
+- `ai-engineer-transition-plan.md` — master career plan. Keep it clean and forward-looking: no revision notes, no history.
+- `plan-history.md` — archive: older plan versions, the Decisions Log, detailed Weeks 1–6 notes
 - `HANDOFF-*.md` — session-to-session handoff notes; read the most recent one before picking up work
 - `llm-practice/` — LLM engineering practice (Python 3.14, `uv`, structured outputs, evals, RAG/pgvector, midterm project). Uses `openai` SDK via an **OpenCode Go** gateway (`base_url` override, OpenAI-compatible; previously Ollama — client.py is the source of truth). Evals run via `promptfooconfig.yaml` in this folder.
 - `python-practice/` — completed Python TDD gym (67/67 green). Mostly historical; don't refactor for fun.
@@ -27,7 +28,7 @@ A personal learning/workspace monorepo for an AI-engineer transition (see `ai-en
 
 1. **TDD-first in practice folders.** When implementing exercises, keep the red→green loop: run the matching test module, implement, re-run. Don't rewrite the provided test suites unless explicitly asked.
 2. **Preserve handoff integrity.** `HANDOFF-*.md` files are the memory across sessions. When finishing meaningful work, update or create a handoff note instead of relying on chat history.
-3. **Don't touch the decisions log history.** Append to the plan's Decisions Log with rationale; never rewrite old entries.
+3. **Don't touch the decisions log history.** Append new decisions to the Decisions Log in `plan-history.md` with rationale; never rewrite old entries. Don't add history or "revised" notes to the plan itself.
 4. **Explain while building.** This is a learning repo — prefer code with brief explanatory comments and honest notes in handoffs over silent "magic fixes".
 5. **Keep provider portability.** LLM code should stay OpenAI-SDK-shaped (portable across Ollama/OpenRouter/etc.). Anthropic SDK usage is read-only/conceptual unless the user says otherwise.
 6. **Secrets stay in `.env`**; if a conversation/export contains credentials, warn before `/share` or `/export`.
